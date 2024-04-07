@@ -2,7 +2,7 @@ import os
 import glob
 from gemini import load_json, Utils
 import gemini
-from collections import Counter
+from collections import Counter, defaultdict
 
 TARGET_DIR = gemini.TARGET_DIR
 CONVERSATION_DIR = gemini.CONVERSATION_DIR
@@ -93,8 +93,37 @@ def count_number_of_features_of_first_assistant_reply(conversation_dir=CONVERSAT
         print(k, counter[k], '%.2f%%' % (counter[k] / sm * 100))
 
 
+def count_mention_the_target_with_average(conversation_dir=CONVERSATION_DIR):
+    dd = defaultdict(lambda: [0, 0, 0])
+    for json_path in glob.glob(conversation_dir + '/*'):
+        groups = load_json(json_path)
+        for group in groups:
+            for d in group:
+                if 'CONVERSATION' not in d:
+                    continue
+                rounds = d['ROUND']
+                target_good_name = d['TARGET'][1][0]  # for example: 'A'
+                assistant_replies = ''
+                for i in (1, 3, 5, 7, 9):
+                    if i < len(d['CONVERSATION']) - 2:
+                        assistant_replies += d['CONVERSATION'][i] + '\n'
+                    else:
+                        break
+
+                mention_features = frozenset(filter(lambda s: s[1] == '-', Utils.parse_bracket(assistant_replies)))
+                dd[rounds][2] += len(mention_features)
+                mention = target_good_name in ''.join(mention_features)
+                dd[rounds][mention] += 1
+
+    for k in sorted(dd):
+        not_mention, mention, total_features = dd[k]
+        num = not_mention + mention
+        print(k, ":", not_mention, "|", mention, "|", '%.2f%% | %.2f' % (mention * 100 / num, total_features / num))
+
+
 if __name__ == '__main__':
-    target_statistic()
+    # target_statistic()
     # test_target_position_bias()
     # inspect_features_and_personas()
     # count_number_of_features_of_first_assistant_reply()
+    count_mention_the_target_with_average()
