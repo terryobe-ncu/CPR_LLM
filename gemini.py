@@ -97,7 +97,7 @@ LOGS = []
 
 
 def generate_content(message, logs=False) -> str:
-    if logs:
+    if logs is not None:
         LOGS.append(message)
     while True:
         response = None
