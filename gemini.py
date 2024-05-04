@@ -96,7 +96,7 @@ class Utils:
 LOGS = []
 
 
-def generate_content(message, logs=False) -> str:
+def generate_content(message, logs=None) -> str:
     if logs is not None:
         LOGS.append(message)
     while True:
