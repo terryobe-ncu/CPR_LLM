@@ -96,16 +96,17 @@ class Utils:
 LOGS = []
 
 
-def generate_content(message, logs=None) -> str:
-    if logs is not None:
-        LOGS.append(message)
+def generate_content(message, logs=False) -> str:
     while True:
         response = None
         try:
             response = MODEL.generate_content(
                 message, generation_config=CONFIG, safety_settings=SAFETY_SETTINGS
             )
-            return response.text
+            reply = response.text
+            if logs:  # True or False
+                LOGS.append(message + [{'role': 'model', 'parts': [reply]}])
+            return reply
         except GoogleAPIError as e:
             input('\33[31m' + f"{e}" + '\33[0m')
         except ValueError:
