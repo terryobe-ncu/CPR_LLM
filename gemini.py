@@ -256,7 +256,7 @@ def data_get_first_question(target_dir=TARGET_DIR, output_dir=QUESTION_DIR):
         dump_json(groups, pj(output_dir, target_json))
 
 
-def data_start_converstion(question_dir=QUESTION_DIR, output_dir=CONVERSATION_DIR):
+def data_start_conversation(question_dir=QUESTION_DIR, output_dir=CONVERSATION_DIR):
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     for target_json in os.listdir(question_dir):
@@ -280,4 +280,4 @@ def data_start_converstion(question_dir=QUESTION_DIR, output_dir=CONVERSATION_DI
 if __name__ == '__main__':
     data_add_persona()
     data_add_target()
-    data_start_converstion()
+    data_start_conversation()
